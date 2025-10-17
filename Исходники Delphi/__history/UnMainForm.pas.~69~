@@ -1,0 +1,634 @@
+unit UnMainForm;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, cxGraphics, cxControls, cxLookAndFeels,
+  cxLookAndFeelPainters, cxStyles, dxSkinsCore, dxSkinBlack, dxSkinBlue,
+  dxSkinBlueprint, dxSkinCaramel, dxSkinCoffee, dxSkinDarkroom, dxSkinDarkSide,
+  dxSkinDevExpressDarkStyle, dxSkinDevExpressStyle, dxSkinFoggy,
+  dxSkinGlassOceans, dxSkinHighContrast, dxSkinLilian, dxSkinLiquidSky,
+  dxSkinLondonLiquidSky, dxSkinMcSkin, dxSkinMetropolis, dxSkinMetropolisDark,
+  dxSkinMoneyTwins, dxSkinOffice2007Black, dxSkinOffice2007Blue,
+  dxSkinOffice2007Green, dxSkinOffice2007Pink, dxSkinOffice2007Silver,
+  dxSkinOffice2010Black, dxSkinOffice2010Blue, dxSkinOffice2010Silver,
+  dxSkinOffice2013DarkGray, dxSkinOffice2013LightGray, dxSkinOffice2013White,
+  dxSkinOffice2016Colorful, dxSkinOffice2016Dark, dxSkinOffice2019Colorful,
+  dxSkinPumpkin, dxSkinSeven, dxSkinSevenClassic, dxSkinSharp, dxSkinSharpPlus,
+  dxSkinSilver, dxSkinSpringtime, dxSkinStardust, dxSkinSummer2008,
+  dxSkinTheAsphaltWorld, dxSkinTheBezier, dxSkinsDefaultPainters,
+  dxSkinValentine, dxSkinVisualStudio2013Blue, dxSkinVisualStudio2013Dark,
+  dxSkinVisualStudio2013Light, dxSkinVS2010, dxSkinWhiteprint,
+  dxSkinXmas2008Blue, cxCustomData, cxFilter, cxData, cxDataStorage, cxEdit,
+  cxNavigator, dxDateRanges, Data.DB, cxDBData, cxGridLevel, cxGridCustomView,
+  cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid,
+  Vcl.ExtCtrls, cxClasses, cxContainer, Vcl.ComCtrls, dxCore, cxDateUtils,
+  cxCheckBox, Vcl.StdCtrls, cxDropDownEdit, cxCheckComboBox, Vcl.Buttons,
+  cxTextEdit, cxMaskEdit, cxCalendar, MemDS, DBAccess, Ora, OraCall, OdacVcl,
+  StrUtils, Math, cxGridExportLink, ShellApi,
+  dxmdaset, OraSmart, dxSkinsForm, Vcl.Menus, cxGridBandedTableView,
+  cxGridDBBandedTableView, OraTransaction, OraPackage;
+
+type
+  TfrmMainForm = class(TForm)
+    Panel1: TPanel;
+    cxGridView1: TcxGridDBTableView;
+    cxGrid1Level1: TcxGridLevel;
+    cxGrid1: TcxGrid;
+    GroupBox1: TGroupBox;
+    cxDateFrom: TcxDateEdit;
+    btnLoad: TBitBtn;
+    Database: TOraSession;
+    qCompetitors: TOraQuery;
+    ConnectDialog1: TConnectDialog;
+    qPrices: TOraQuery;
+    dsMain: TOraDataSource;
+    dxMemData1: TdxMemData;
+    GTT_REPORT_FILTER: TOraTable;
+    tmpQuery: TOraQuery;
+    qPricesPRODUCT_ID: TFloatField;
+    qPricesPRODUCT_NAME: TStringField;
+    qPricesCOMPETITOR_ID: TFloatField;
+    qPricesCOMPETITOR_NAME: TStringField;
+    qPricesPRICE: TFloatField;
+    cxGridView1Column1: TcxGridDBColumn;
+    dxSkinController1: TdxSkinController;
+    PopMenuCompetitors: TPopupMenu;
+    N1: TMenuItem;
+    N2: TMenuItem;
+    cxGrid1DBBandedTableView1: TcxGridDBBandedTableView;
+    cxGrid1DBBandedTableView1Column1: TcxGridDBBandedColumn;
+    cxGrid1DBBandedTableView1Column2: TcxGridDBBandedColumn;
+    Panel2: TPanel;
+    btnSave: TBitBtn;
+    btnCancel: TBitBtn;
+    btnExit: TBitBtn;
+    OraTransaction1: TOraTransaction;
+    cxStyleRepository1: TcxStyleRepository;
+    cxGridBandedTableViewStyleSheet1: TcxGridBandedTableViewStyleSheet;
+    getPrevPrice: TOraQuery;
+    getPrevPricePREV_PRICE: TFloatField;
+    BitNext: TBitBtn;
+    BitPrev: TBitBtn;
+    BitBtn3: TBitBtn;
+    GroupBox2: TGroupBox;
+    cbCompetitors: TcxCheckComboBox;
+    chALL: TCheckBox;
+    procedure FormCreate(Sender: TObject);
+    procedure btnExitClick(Sender: TObject);
+    procedure btnLoadClick(Sender: TObject);
+    procedure GetSelectedCompetitorIDs;
+    procedure btnSaveClick(Sender: TObject);
+    procedure BuildGridColumns;
+    procedure LoadDataFromOracle;
+    procedure N1Click(Sender: TObject);
+    procedure N2Click(Sender: TObject);
+    procedure chALLClick(Sender: TObject);
+    procedure dxMemData1AfterEdit(DataSet: TDataSet);
+    procedure FLAG_EDIT;
+    procedure PriceFieldValidate(Sender: TField);
+    procedure SAVE_DAY;
+    function CheckCompetitors:boolean;
+    procedure AdjustBandWidth(Band: TcxGridBand);
+    procedure cxGrid1DBBandedTableView1CustomDrawCell(
+      Sender: TcxCustomGridTableView; ACanvas: TcxCanvas;
+      AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
+    procedure BitBtn3Click(Sender: TObject);
+    procedure BitPrevClick(Sender: TObject);
+    procedure BitNextClick(Sender: TObject);
+    procedure btnCancelClick(Sender: TObject);
+    procedure QuestionSave;
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmMainForm: TfrmMainForm;
+
+type
+  TIntegerDynArray = array of Integer;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmMainForm.btnLoadClick(Sender: TObject);
+begin
+  if VarIsNull(cxDateFrom.EditValue) then
+  begin
+    ShowMessage('Будь ласка, введіть дату!');
+    cxDateFrom.SetFocus;
+    Exit;
+  end;
+
+  if CheckCompetitors=False then
+  begin
+    ShowMessage('Будь ласка, оберіть хоча б одного конкурента!');
+    cbCompetitors.SetFocus;
+    Exit;
+  end;
+ //заполняем GTT таблицу Конкурентами
+  GetSelectedCompetitorIDs;
+
+ //строим столбцы MemTable
+ BuildGridColumns;
+
+ //загружаем данные
+ LoadDataFromOracle;
+
+ //выравниваем Band по ширине столбцов
+ AdjustBandWidth(cxGrid1DBBandedTableView1.Bands[1]);
+
+ //Минула дата - тільки перегляд
+ if cxDateFrom.Date<>Date then
+  cxGrid1DBBandedTableView1.OptionsData.Editing:=False
+  else   cxGrid1DBBandedTableView1.OptionsData.Editing:=True;
+
+
+end;
+//-------------------------------
+
+function TfrmMainForm.CheckCompetitors: Boolean;
+var
+  i: Integer;
+begin
+  Result := False;
+  for i := 0 to cbCompetitors.Properties.Items.Count - 1 do
+  begin
+    if cbCompetitors.States[i] = cbsChecked then
+    begin
+      Result := True;
+      Exit; // сразу выходим из цикла, нашли выбранный элемент
+    end;
+  end;
+
+end;
+
+procedure TfrmMainForm.cxGrid1DBBandedTableView1CustomDrawCell(
+  Sender: TcxCustomGridTableView; ACanvas: TcxCanvas;
+  AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
+var
+  Col: TcxGridDBBandedColumn;
+  FieldName, ArrowText: string;
+  ProductID, CompetitorID: Integer;
+  PriceValue, PrevPrice: Variant;
+  PriceFieldName: string;
+  R: TRect;
+begin
+ Col := TcxGridDBBandedColumn(AViewInfo.Item);
+  if not Assigned(Col.DataBinding) then Exit;
+  FieldName := Col.DataBinding.FieldName;
+
+  // применяем только к динамическим колонкам PRICE_COMP_*
+  if Pos('PRICE_COMP_', FieldName) = 1 then
+  begin
+    // получаем ID конкурента из имени колонки
+    CompetitorID := StrToIntDef(Copy(FieldName, Length('PRICE_COMP_')+1, 10), 0);
+
+    // берём product_id из текущей записи
+    ProductID := AViewInfo.GridRecord.Values[
+      cxGrid1DBBandedTableView1.GetColumnByFieldName('PRODUCT_ID').Index];
+
+    // берём текущую цену
+    PriceValue := AViewInfo.GridRecord.Values[AViewInfo.Item.Index];
+
+    if VarIsNull(PriceValue) or (PriceValue=0) then Exit;
+
+    // вызываем функцию get_prev_price -определяем предыдущую цену по этому товару и конкуренту
+     if getPrevPrice.Active then getPrevPrice.Close;
+
+    getPrevPrice.ParamByName('product_id').value:=ProductID;
+    getPrevPrice.ParamByName('competitor_id').value:=CompetitorID;
+    getPrevPrice.ParamByName('monitor_date').value:=cxDateFrom.Date;
+    getPrevPrice.ExecSQL;
+    PrevPrice := getPrevPrice.FieldByName('PREV_PRICE').Value;
+
+    // подготовка к отрисовке
+    if (VarIsNull(PrevPrice)) or (PriceValue = PrevPrice) then exit;
+
+    if PriceValue > PrevPrice then
+    ACanvas.Brush.Color := RGB(255, 220, 220)  // светло-розовый, мягкий
+    else
+     ACanvas.Brush.Color := RGB(220, 255, 220); // светло-зелёный, мягкий
+
+      R := AViewInfo.Bounds;
+      ACanvas.FillRect(R);
+      ACanvas.Font.Color := clBlack;
+  end;
+end;
+//-----------------------------------------
+procedure TfrmMainForm.QuestionSave;
+begin
+
+    if btnSave.Enabled = True then
+    begin
+      case MessageBox(0, 'Зберегти зміни? ', 'Збереження данних', MB_ICONQUESTION or MB_YESNOCANCEL) of
+        idYes    : begin
+                   SAVE_DAY;
+                  end;
+        idNo     : btnCancel.Click;
+        idCancel : Abort;
+      end ;
+    end;
+
+end;
+
+//-------------------------------------
+procedure TfrmMainForm.AdjustBandWidth(Band: TcxGridBand);
+var
+  i, TotalWidth: Integer;
+begin
+  TotalWidth := 0;
+  for i := 0 to Band.ColumnCount - 1 do
+    TotalWidth := TotalWidth + 100;//Band.Columns[i].Width;
+
+  Band.Width := TotalWidth;
+end;
+
+//--------------------------------------
+procedure TfrmMainForm.LoadDataFromOracle;
+var
+  ProductID: Integer;
+  CaptionName: string;
+
+begin
+  // Очистим предыдущее содержимое
+//  cxGridView1.ClearItems;
+//  dxMemData1.Close;
+//  dxMemData1.FieldDefs.Clear;
+//  dxMemData1.Fields.Clear;
+    cxGrid1DBBandedTableView1.BeginUpdate;
+  try
+if qPrices.Active then qPrices.Close;
+qPrices.ParamByName('in_date').Value:=cxDateFrom.Date;
+qPrices.Open;
+    // Проверим наличие данных
+    if qPrices.IsEmpty then
+    begin
+      ShowMessage('Немає даних для відображення.');
+      Exit;
+    end;
+
+if dxMemData1.Active = false then dxMemData1.Open;
+
+qPrices.First;
+while not qPrices.Eof do
+begin
+   ProductID := qPrices.FieldByName('PRODUCT_ID').AsInteger;
+
+  // Проверяем, есть ли уже запись для этого товара
+  if not dxMemData1.Locate('PRODUCT_ID', ProductID, []) then
+  begin
+    dxMemData1.Append;
+    dxMemData1.FieldByName('PRODUCT_ID').AsInteger := ProductID;
+    dxMemData1.FieldByName('PRODUCT_NAME').AsString := qPrices.FieldByName('PRODUCT_NAME').AsString;
+    dxMemData1.Post;
+  end;
+
+  // Редактируем существующую запись и вставляем цену конкурента
+  if dxMemData1.Locate('PRODUCT_ID', ProductID, []) then
+  begin
+    dxMemData1.Edit;
+    dxMemData1.FieldByName(
+      Format('PRICE_COMP_%d', [qPrices.FieldByName('COMPETITOR_ID').AsInteger])
+    ).AsFloat := qPrices.FieldByName('PRICE').AsFloat;
+    dxMemData1.Post;
+  end;
+
+  qPrices.Next;
+ end;
+    // Привязываем данные к гриду
+    dsMain.DataSet := dxMemData1;
+    cxGrid1DBBandedTableView1.DataController.DataSource := dsMain;
+
+  finally
+     cxGrid1DBBandedTableView1.EndUpdate;
+     btnSave.Enabled:=false;
+     btnCancel.Enabled:=false;
+  end;
+
+
+end;
+
+
+procedure TfrmMainForm.N1Click(Sender: TObject);
+var
+  i: Integer;
+begin
+  for i := 0 to cbCompetitors.Properties.Items.Count - 1 do
+    cbCompetitors.SetItemState(i, cbsChecked);
+end;
+
+procedure TfrmMainForm.N2Click(Sender: TObject);
+var
+  i: Integer;
+begin
+  for i := 0 to cbCompetitors.Properties.Items.Count - 1 do
+    cbCompetitors.SetItemState(i, cbsUnchecked);
+end;
+
+{=== Получение ID выбранных конкурентов ===}
+procedure TfrmMainForm.GetSelectedCompetitorIDs;
+var
+  i: Integer;
+begin
+
+ if GTT_REPORT_FILTER.Active then GTT_REPORT_FILTER.Close;
+ if tmpQuery.Active then tmpQuery.Close;
+ tmpQuery.SQL.Clear;
+   // Сначала очищаем все данные из GTT для текущей сессии и отчета
+  tmpQuery.SQL.Text :=
+    'DELETE FROM gtt_report_filter ' +
+    'WHERE report_name = ''Mainquery'' ' +
+    'AND session_id = SYS_CONTEXT(''USERENV'',''SESSIONID'')';
+  tmpQuery.Execute;
+
+  if tmpQuery.Active then tmpQuery.Close;
+  tmpQuery.SQL.Clear;
+  tmpQuery.SQL.Text:='insert into gtt_report_filter  ( param_num, report_name) '+
+                      ' values  ( :v_param_num, ''Mainquery'') ';
+
+  for i := 0 to cbCompetitors.Properties.Items.Count - 1 do
+    if cbCompetitors.States[i] = cbsChecked then
+    begin
+      tmpQuery.ParamByName('v_param_num').AsInteger:= cbCompetitors.Properties.Items[i].Tag; // ID конкурента
+      tmpQuery.Execute;
+    end;
+end;
+
+
+procedure TfrmMainForm.BuildGridColumns;
+var
+  compIDs: TArray<Integer>;
+  compNames: TArray<string>;
+  i: Integer;
+  FieldName, CaptionName: string;
+  col: TcxGridDBBandedColumn;
+  mFieldDef: TFieldDef;
+
+begin
+  // Очищаем предыдущие данные/поля/колонки
+  cxGrid1DBBandedTableView1.ClearItems;
+  dxMemData1.Close;
+  dxMemData1.FieldDefs.Clear;
+  dxMemData1.Fields.Clear;
+
+  // Основные поля
+  mFieldDef := dxMemData1.FieldDefs.AddFieldDef;
+  mFieldDef.Name := 'PRODUCT_ID';
+  mFieldDef.DataType := ftInteger;
+  mFieldDef.Required := True;
+  mFieldDef.CreateField(dxMemData1);
+
+  mFieldDef := dxMemData1.FieldDefs.AddFieldDef;
+  mFieldDef.Name := 'PRODUCT_NAME';
+  mFieldDef.DataType := ftString;
+  mFieldDef.Size := 300;
+  mFieldDef.CreateField(dxMemData1);
+
+
+  // Получаем список выбранных конкурентов из GTT_REPORT_FILTER для текущей сессии
+  tmpQuery.Close;
+  tmpQuery.SQL.Text :=
+    'SELECT c.id, c.name ' +
+    'FROM competitors c ' +
+    'INNER JOIN GTT_REPORT_FILTER g ' +
+    'ON g.param_num = c.id ' +
+    'WHERE g.session_id = SYS_CONTEXT(''USERENV'',''SESSIONID'') ' +
+    'AND g.report_name = ''Mainquery'' ' +
+    'AND c.status = 1 ' +
+    'ORDER BY c.id';
+  tmpQuery.Open;
+
+  SetLength(compIDs, tmpQuery.RecordCount);
+  SetLength(compNames, tmpQuery.RecordCount);
+
+  i := 0;
+  while not tmpQuery.Eof do
+  begin
+    compIDs[i] := tmpQuery.FieldByName('id').AsInteger;
+    compNames[i] := tmpQuery.FieldByName('name').AsString;
+    Inc(i);
+    tmpQuery.Next;
+  end;
+  tmpQuery.Close;
+
+  // Динамические поля: по каждому выбранному конкуренту создаём поле PRICE_COMP_<ID>
+  for i := 0 to High(compIDs) do
+  begin
+    FieldName := Format('PRICE_COMP_%d', [compIDs[i]]);
+      mFieldDef := dxMemData1.FieldDefs.AddFieldDef;
+      mFieldDef.Name := FieldName;
+      mFieldDef.DataType := ftFloat;
+      mFieldDef.CreateField(dxMemData1);
+      TFloatField(dxMemData1.FieldByName(FieldName)).DisplayFormat := '0.00';
+  end;
+
+  dsMain.DataSet := dxMemData1;
+  cxGrid1DBBandedTableView1.DataController.DataSource := dsMain;
+
+  // Создать колонки: сначала продукт
+    col := cxGrid1DBBandedTableView1.CreateColumn as TcxGridDBBandedColumn;
+  col.DataBinding.FieldName := 'PRODUCT_ID';
+  col.Caption:='ID';
+  col.Width := 25;
+  col.Options.Editing:=False;
+  col.Position.BandIndex:=0;
+  col.HeaderAlignmentHorz:=taCenter;
+  //---------------------------
+  col := cxGrid1DBBandedTableView1.CreateColumn as TcxGridDBBandedColumn;
+  col.DataBinding.FieldName := 'PRODUCT_NAME';
+  col.Caption := 'Дата: '+ DateToStr(cxDateFrom.Date);
+  col.Width := 250;
+  col.Options.Editing:=False;
+  col.Position.BandIndex:=0;
+  col.HeaderAlignmentHorz:=taCenter;
+  //--------------------------
+  // Колонки конкурентов (в том же порядке, что и compIDs)
+  for i := 0 to High(compIDs) do
+  begin
+    FieldName := Format('PRICE_COMP_%d', [compIDs[i]]);
+    CaptionName := compNames[i];
+
+    col := cxGrid1DBBandedTableView1.CreateColumn as TcxGridDBBandedColumn;
+    col.DataBinding.FieldName := FieldName;
+    col.Caption := CaptionName;
+    col.Width := 110;
+    col.Position.BandIndex:=1;
+    col.HeaderAlignmentHorz:=taCenter;
+
+  end;
+end;
+
+
+procedure TfrmMainForm.chALLClick(Sender: TObject);
+var
+  i: Integer;
+  st:TcxCheckBoxState;
+begin
+  if chALL.Checked then st:=cbsChecked else st:=cbsUnchecked;
+
+  for i := 0 to cbCompetitors.Properties.Items.Count - 1 do
+    cbCompetitors.SetItemState(i, st);
+
+end;
+
+procedure TfrmMainForm.dxMemData1AfterEdit(DataSet: TDataSet);
+begin
+FLAG_EDIT;
+
+end;
+
+procedure TfrmMainForm.FLAG_EDIT;
+begin
+btnSave.Enabled:=true;
+btnCancel.Enabled:=true;
+end;
+
+procedure TfrmMainForm.btnSaveClick(Sender: TObject);
+begin
+SAVE_DAY;
+end;
+
+procedure TfrmMainForm.SAVE_DAY;
+var
+  ColName: string;
+   j:integer;
+begin
+  if not dxMemData1.Active then Exit;
+
+tmpQuery.SQL.Text := 'DECLARE '+
+                     '  v_prices t_price_tab_obj := t_price_tab_obj(); '+
+                     'BEGIN '+
+                     '  v_prices.EXTEND; '+
+                     '  v_prices(v_prices.COUNT) := t_price_rec_obj(:product_id, :competitor_id, :monitor_date, :price); '+
+                     '  PRICE_MONITORING.save_prices(v_prices); '+
+                     'END;';
+
+tmpQuery.Prepare;
+
+OraTransaction1.StartTransaction;
+dxMemData1.First;
+while not dxMemData1.Eof do
+begin
+ for j := 0 to dxMemData1.FieldCount - 1 do
+ begin
+  ColName := dxMemData1.Fields[j].FieldName;
+
+  if ColName = 'PRODUCT_NAME' then
+    Continue
+  else if ColName = 'PRODUCT_ID' then
+    tmpQuery.ParamByName('product_id').Value := dxMemData1.Fields[j].AsInteger
+  else if Pos('PRICE_COMP_', ColName) = 1 then
+  begin
+    tmpQuery.ParamByName('competitor_id').Value := StrToIntDef(Copy(ColName, Length('PRICE_COMP_')+1, 10), 0);
+    tmpQuery.ParamByName('monitor_date').Value := cxDateFrom.Date;
+    tmpQuery.ParamByName('price').Value := dxMemData1.Fields[j].AsVariant;
+    try
+    tmpQuery.ExecSQL;
+    except
+    on E: Exception do
+      ShowMessage('Помилка збереження ціни: ' + E.Message);
+    end;
+  end;
+ end;
+
+  dxMemData1.Next;
+end;
+
+try
+    OraTransaction1.Commit;
+    ShowMessage('Зміни збережено!');
+    btnSave.Enabled := False;
+    btnCancel.Enabled := False;
+except
+  on E: Exception do
+  begin
+    ShowMessage('Помилка при збережені: ' + E.Message);
+    btnSave.Enabled := true;
+    btnCancel.Enabled := true;
+  end;
+end;
+end;
+
+procedure TfrmMainForm.PriceFieldValidate(Sender: TField);
+begin
+  if Sender.AsFloat < 0 then
+    raise Exception.Create('Ціна не може бути меньше нуля.');
+
+  // Округление до двух знаков
+  Sender.AsFloat := RoundTo(Sender.AsFloat, -2);
+end;
+
+
+procedure TfrmMainForm.BitPrevClick(Sender: TObject);
+begin
+QuestionSave;
+cxDateFrom.Date := cxDateFrom.Date - 1;
+btnLoad.Click;
+end;
+
+procedure TfrmMainForm.BitBtn3Click(Sender: TObject);
+var XLS_File,LocalOut: string;
+begin
+      LocalOut:=ExtractFilePath(Application.ExeName)+'Reports';
+      if DirectoryExists(LocalOut) = False then MkDir(LocalOut);
+
+			XLS_File := 'Моніторінг_цін.xlsx';
+    	ExportGridToXLSX(LocalOut + '\' + XLS_File, cxGrid1, true);
+      ShellExecute(Handle, 'open',  Pchar(LocalOut + '\' + XLS_File), nil, nil, SW_SHOWNORMAL);
+end;
+
+procedure TfrmMainForm.BitNextClick(Sender: TObject);
+begin
+QuestionSave;
+cxDateFrom.Date:=cxDateFrom.Date+1;
+btnLoad.Click;
+end;
+
+procedure TfrmMainForm.btnCancelClick(Sender: TObject);
+begin
+OraTransaction1.Rollback;
+btnLoad.Click;
+end;
+
+procedure TfrmMainForm.btnExitClick(Sender: TObject);
+begin
+Close;
+end;
+
+procedure TfrmMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+QuestionSave;
+end;
+
+procedure TfrmMainForm.FormCreate(Sender: TObject);
+var
+  Item: TcxCheckComboBoxItem;
+  i:integer;
+begin
+  cxDateFrom.Date:=Date;
+  qCompetitors.Close;
+  qCompetitors.SQL.Text := 'SELECT id, name FROM competitors WHERE status = 1 ORDER BY name';
+  qCompetitors.Open;
+
+  cbCompetitors.Properties.Items.Clear;
+  i:=0;
+  while not qCompetitors.Eof do
+  begin
+    Item := cbCompetitors.Properties.Items.Add;
+    Item.Description := qCompetitors.FieldByName('name').AsString;
+    Item.Tag := qCompetitors.FieldByName('id').AsInteger;
+
+    // отметить элемент как выбранный
+    cbCompetitors.SetItemState(i, cbsChecked);
+    inc(i);
+    qCompetitors.Next;
+  end;
+end;
+
+end.

@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>1899.12.30 00:00:00.000.287,=C:\Users\SBU\Documents\RAD Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.125,E:\MY_PROG\RitealGroup\Система моніторингу цін\UnMonitorSytem.dfm=C:\Users\SBU\Documents\RAD Studio\Projects\Unit1.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.423,E:\MY_PROG\RitealGroup\Система моніторингу цін\MonitorSystem.dproj=C:\Users\SBU\Documents\RAD Studio\Projects\Project1.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.043,=C:\Users\SBU\Documents\RAD Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.125,E:\MY_PROG\RitealGroup\Система моніторингу цін\UnMonitorSytem.pas=C:\Users\SBU\Documents\RAD Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.119,E:\MY_PROG\RitealGroup\Система моніторингу цін\UnMainForm.pas=E:\MY_PROG\RitealGroup\Система моніторингу цін\UnMonitorSytem.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.119,E:\MY_PROG\RitealGroup\Система моніторингу цін\UnMainForm.dfm=E:\MY_PROG\RitealGroup\Система моніторингу цін\UnMonitorSytem.dfm</Transaction>
+  </Transactions>
+</BorlandProject>
