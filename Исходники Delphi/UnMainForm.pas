@@ -26,7 +26,7 @@ uses
   Vcl.ExtCtrls, cxClasses, cxContainer, Vcl.ComCtrls, dxCore, cxDateUtils,
   cxCheckBox, Vcl.StdCtrls, cxDropDownEdit, cxCheckComboBox, Vcl.Buttons,
   cxTextEdit, cxMaskEdit, cxCalendar, MemDS, DBAccess, Ora, OraCall, OdacVcl,
-  StrUtils, Math, cxGridExportLink, ShellApi,
+  StrUtils, Math, cxGridExportLink, ShellApi,IniFiles,
   dxmdaset, OraSmart, dxSkinsForm, Vcl.Menus, cxGridBandedTableView,
   cxGridDBBandedTableView, OraTransaction, OraPackage;
 
@@ -41,7 +41,6 @@ type
     btnLoad: TBitBtn;
     Database: TOraSession;
     qCompetitors: TOraQuery;
-    ConnectDialog1: TConnectDialog;
     qPrices: TOraQuery;
     dsMain: TOraDataSource;
     dxMemData1: TdxMemData;
@@ -75,6 +74,8 @@ type
     GroupBox2: TGroupBox;
     cbCompetitors: TcxCheckComboBox;
     chALL: TCheckBox;
+    qCompetitorsID: TFloatField;
+    qCompetitorsNAME: TStringField;
     procedure FormCreate(Sender: TObject);
     procedure btnExitClick(Sender: TObject);
     procedure btnLoadClick(Sender: TObject);
@@ -100,6 +101,7 @@ type
     procedure btnCancelClick(Sender: TObject);
     procedure QuestionSave;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure ConnectToDatabase(OraSession: TOraSession; const IniFileName: string);
   private
     { Private declarations }
   public
@@ -115,6 +117,44 @@ type
 implementation
 
 {$R *.dfm}
+
+procedure TfrmMainForm.ConnectToDatabase(OraSession: TOraSession; const IniFileName: string);
+var
+  Ini: TIniFile;
+  Server, Port, SID, UserName, Password: string;
+begin
+  Ini := TIniFile.Create(ExtractFilePath(Application.ExeName) +'dbconfig.ini');
+  try
+    Server   := Ini.ReadString('Database', 'Server', '');
+    Port     := Ini.ReadString('Database', 'Port', '1521');
+    SID      := Ini.ReadString('Database', 'SID', '');
+    UserName := Ini.ReadString('Database', 'UserName', '');
+    Password := Ini.ReadString('Database', 'Password', '');
+
+    if (Server = '') or (SID = '') then
+      raise Exception.Create('Не вказано параметри підключення у INI файлі.');
+
+    Database.Connected := False;
+    Database.Username  := UserName;
+    Database.Password  := Password;
+    Database.Server    := Format('%s:%s:%s', [Server, Port, SID]);
+    Database.LoginPrompt := False;
+
+    try
+      Database.Connected := True;
+      //MessageDlg('Підключення успішно встановлено!', mtInformation, [mbOK], 0);
+    except
+      on E: Exception do
+      begin
+        MessageDlg('Помилка підключення до бази даних:'#13#10 + E.Message,
+          mtError, [mbOK], 0);
+      end;
+    end;
+  finally
+    Ini.Free;
+  end;
+end;
+//--------------------------------------------------
 
 procedure TfrmMainForm.btnLoadClick(Sender: TObject);
 begin
@@ -611,11 +651,11 @@ var
   Item: TcxCheckComboBoxItem;
   i:integer;
 begin
-  cxDateFrom.Date:=Date;
-  qCompetitors.Close;
-  qCompetitors.SQL.Text := 'SELECT id, name FROM competitors WHERE status = 1 ORDER BY name';
-  qCompetitors.Open;
+//соединение с БД
+ConnectToDatabase(Database, ExtractFilePath(Application.ExeName) + 'dbconfig.ini');
 
+  cxDateFrom.Date:=Date;
+  qCompetitors.Open;
   cbCompetitors.Properties.Items.Clear;
   i:=0;
   while not qCompetitors.Eof do

@@ -24,7 +24,6 @@ object frmMainForm: TfrmMainForm
     Height = 67
     Align = alTop
     TabOrder = 0
-    ExplicitTop = -6
     object GroupBox1: TGroupBox
       Left = 1
       Top = 1
@@ -135,10 +134,6 @@ object frmMainForm: TfrmMainForm
       Align = alClient
       Caption = #1042#1080#1073#1110#1088' '#1082#1086#1085#1082#1091#1088#1077#1085#1090#1110#1074':'
       TabOrder = 1
-      ExplicitLeft = 456
-      ExplicitTop = 0
-      ExplicitWidth = 650
-      ExplicitHeight = 105
       object cbCompetitors: TcxCheckComboBox
         AlignWithMargins = True
         Left = 22
@@ -158,9 +153,6 @@ object frmMainForm: TfrmMainForm
         Style.Font.Style = []
         Style.IsFontAssigned = True
         TabOrder = 0
-        ExplicitLeft = 25
-        ExplicitTop = 20
-        ExplicitHeight = 24
         Width = 505
       end
       object chALL: TCheckBox
@@ -183,9 +175,6 @@ object frmMainForm: TfrmMainForm
         State = cbChecked
         TabOrder = 1
         OnClick = chALLClick
-        ExplicitLeft = 553
-        ExplicitTop = 26
-        ExplicitHeight = 17
       end
     end
   end
@@ -456,46 +445,30 @@ object frmMainForm: TfrmMainForm
   end
   object Database: TOraSession
     Options.Direct = True
-    Username = 'retailgroup'
     Server = '127.0.0.1:1521:unic'
-    Connected = True
-    ConnectDialog = ConnectDialog1
+    LoginPrompt = False
     Left = 208
-    Top = 176
+    Top = 248
     EncryptedPassword = 'CEFF'
   end
   object qCompetitors: TOraQuery
     Session = Database
+    SQL.Strings = (
+      'SELECT id, name '
+      'FROM competitors '
+      'WHERE status = 1 '
+      'ORDER BY name')
     Left = 600
     Top = 192
-  end
-  object ConnectDialog1: TConnectDialog
-    Caption = 'Connect'
-    ConnectButton = 'Connect'
-    CancelButton = 'Cancel'
-    Server.Caption = 'Server'
-    Server.Visible = True
-    Server.Order = 1
-    UserName.Caption = 'User Name'
-    UserName.Visible = True
-    UserName.Order = 2
-    Password.Caption = 'Password'
-    Password.Visible = True
-    Password.Order = 3
-    Home.Caption = 'Home Name'
-    Home.Visible = False
-    Home.Order = 0
-    Direct.Caption = 'Direct'
-    Direct.Visible = False
-    Direct.Order = 6
-    Schema.Caption = 'Schema'
-    Schema.Visible = False
-    Schema.Order = 4
-    Role.Caption = 'Connect Mode'
-    Role.Visible = False
-    Role.Order = 5
-    Left = 208
-    Top = 240
+    object qCompetitorsID: TFloatField
+      FieldName = 'ID'
+      Required = True
+    end
+    object qCompetitorsNAME: TStringField
+      FieldName = 'NAME'
+      Required = True
+      Size = 200
+    end
   end
   object qPrices: TOraQuery
     Session = Database
